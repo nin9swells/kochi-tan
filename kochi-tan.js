@@ -1,3 +1,4 @@
+const dns = require('dns');
 var Discord = require("discord.js");
 var bot = new Discord.Client();
 
@@ -79,9 +80,9 @@ function help(cmd) {
     return "**list of commands**\n"
       + "\nfun: `*ding`, `*dong`, `*dice`, `*om`"
       + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`"
-      + "\nhosting: `*host`, `*unhost`, `*hosting`"
+      + "\nhosting: `*host`, `*unhost`, `*hosting`, `ehost`"
       + "\n"
-      + "\nuse `*help something` to show manuals";
+      + "\nuse `*help [command]` to show manuals";
   }
   else if (cmd === "ding" || cmd === "dong") {
     return "**ding dong command**\n\n"
@@ -106,6 +107,16 @@ function help(cmd) {
             + "```\n"
             + "*host 202.175.23.168\n"
             + "*host 202.175.23.168:14949 roku\n"
+            + "```\n"
+            + "Use `*unhost` to stop hosting.";
+  }
+  else if (cmd === "ehost") {
+    return "**EZ Earth VPN host command**\n\n"
+            + "*ehost __servername__ __port__ [comment]\n\n"
+            + "example:\n"
+            + "```\n"
+            + "*ehost jurong 10010\n"
+            + "*ehost digital 10150 roku\n"
             + "```\n"
             + "Use `*unhost` to stop hosting.";
   }
@@ -211,7 +222,7 @@ bot.on("message", msg => {
         // if (!hostIp.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})/))
         if (!validateIpAndPort(hostIp))
         {
-          msg.channel.sendMessage("Don't try to fool me! Please input a valid ip address and port.");
+          msg.channel.sendMessage("Don't try to fool me Kochi-tan! Please input a valid ip address and port.");
           return;
         }
         if (params[1]) {
@@ -224,6 +235,68 @@ bot.on("message", msg => {
         msg.channel.sendMessage(":video_game: :arrow_up_small: " + hostOwner + " is hosting at " + hostIp + " " + hostNote);
       }
     }
+
+    // ehost command
+    if (cmd.toLowerCase() === "ehost") {
+      console.log("Command: ehost");
+
+      // If hostIp is empty, show manuals
+      if (!(params && params[0] && params[1])) {
+        msg.channel.sendMessage(help(cmd));
+      }
+      // If hostName is defined
+      else if (params.length) {
+        if (params[0]) {
+          var hostOwner = msg.author.username;
+          var hostStartTime = (new Date()).toISOString();
+          var hostName = params[0];
+          var hostIp = "";
+          var hostNote = "";
+
+          console.log("Command: ehost, param 0 is not empty");
+
+          db.get("SELECT earthvpn_server_address FROM earthvpn_server WHERE earthvpn_server_name ='" + hostName +"'", function(err, row) {
+            if (row) {
+              console.log("Command: ehost, GET earthvpn_server_address: " + row.earthvpn_server_address);
+              dns.resolve4(row.earthvpn_server_address, function(err, earthvpn_ip) {
+                if (err) throw err;
+                if (earthvpn_ip) hostIp = earthvpn_ip[0];
+              });
+            }
+          });
+
+          // wait until DNS resolve is finished
+          setTimeout(function() {
+            if (hostIp === "") {
+              msg.channel.sendMessage("Server not found.");
+              return;
+            }
+            // add port to ip
+            if (params[1]) {
+              hostIp = hostIp + ":" + params[1];
+              if (!validateIpAndPort(hostIp))
+              {
+                msg.channel.sendMessage("Don't try to fool Kochi-tan! Please input a valid port number.");
+                return;
+              }
+            } else {
+              msg.channel.sendMessage(help(cmd));
+            }
+
+            // get ehost note
+            if (params[2]) {
+              hostNote = params.slice(2).join(" ");
+            }
+
+            db.run("DELETE FROM hosts WHERE host_owner = ?", hostOwner);
+            db.run("INSERT INTO hosts VALUES (?, ?, ?, ?)", hostOwner, hostIp, hostStartTime, hostNote);
+    
+            msg.channel.sendMessage(":video_game: :arrow_up_small: " + hostOwner + " is hosting at " + hostIp + " " + hostNote);
+          }, 500);
+        }
+      } // endif hostName is defined
+    } // endif ehost
+
     // unhost command
     if (cmd.toLowerCase() === "unhost") {
       var hostOwner = msg.author.username;
@@ -271,7 +344,7 @@ bot.on("message", msg => {
             );
           }
         });
-      }, 200);
+      }, 100);
     }
 
 
@@ -327,40 +400,28 @@ bot.on("message", msg => {
 
     // check in database
     var chatMappingId = 0;
-    // setTimeout(function() {
-      console.log(params.toLowerCase());
-      db.all("SELECT chat_mapping_id FROM chat_questions where question_content like '%" + params.toLowerCase() + "%'", function(err, rows) {
+    console.log(params.toLowerCase());
+    db.all("SELECT chat_mapping_id FROM chat_questions where question_content like '%" + params.toLowerCase() + "%'", function(err, rows) {
+      if (rows.length > 0) {
+        chatMappingId = rows[0].chat_mapping_id;
+      }
+    });
 
-console.log("testoooo");
-
-        if (rows.length > 0) {
-          chatMappingId = rows[0].chat_mapping_id;
-        }
-console.log("ayee " + chatMappingId);
-      });
-    // }, 100);
-
-      setTimeout(function() {
-
-console.log("test before chatMappingId --" + chatMappingId);    
-
-
-    if (chatMappingId > 0) {
-console.log("inside mapping");
-
-      db.all("SELECT answer_content FROM chat_answers where chat_mapping_id = " + chatMappingId, function(err, rows) {
-        var num_of_answers = rows.length;
-
-        if (num_of_answers > 0) {
-          var choosen_ans = getRandomInt(0, num_of_answers);
-          msg.channel.sendMessage(rows[choosen_ans].answer_content);
-        }
-        else {
-          msg.channel.sendMessage("Somehow, I don't know to answer that question. Gomen ne");
-        }
-
-      });
-    }   
+    setTimeout(function() {
+      if (chatMappingId > 0) {
+        db.all("SELECT answer_content FROM chat_answers where chat_mapping_id = " + chatMappingId, function(err, rows) {
+          var num_of_answers = rows.length;
+  
+          if (num_of_answers > 0) {
+            var choosen_ans = getRandomInt(0, num_of_answers);
+            msg.channel.sendMessage(rows[choosen_ans].answer_content);
+          }
+          else {
+            msg.channel.sendMessage("Somehow, I don't know to answer that question. Gomen ne");
+          }
+  
+        });
+      }   
     }, 100); //set timeout
 
   }
