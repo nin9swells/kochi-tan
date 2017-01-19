@@ -80,7 +80,7 @@ function help(cmd) {
     return "**list of commands**\n"
       + "\nfun: `*ding`, `*dong`, `*dice`, `*om`"
       + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`, "
-      + "`*alice5a`, `*iku2a`, `*okuu3a`, `*sakudonge`, `*sakuya2b`, `*youmucrab`, `*youmuj5a`, `*yukari3a`, `*yukari6a`"
+      + "`*alice5a`, `*iku2a`, `*okuu3a`, `*sakudonge`, `*sakuya2b`, `sanaej5a.png`, `*youmucrab`, `*youmuj5a`, `*yukari3a`, `*yukari6a`"
       + "\nhosting: `*host`, `*unhost`, `*hosting`, `ehost`"
       + "\n"
       + "\nuse `*help [command]` to show manuals";
@@ -353,15 +353,16 @@ bot.on("message", msg => {
     // lewdkappa
     lcmd = cmd.toLowerCase();
     if (lcmd === "lewdkappa" ||
-        lcmd === "iku2a"   ||
+        lcmd === "iku2a"     ||
         lcmd === "youmuj5a"  ||
         lcmd === "yukari6a") {
       msg.channel.sendFile(imgDir + lcmd + ".jpg", lcmd + ".jpg");
     }
-    if (lcmd === "okuu3a" ||
+    if (lcmd === "okuu3a"    ||
         lcmd === "alice5a"   ||
         lcmd === "sakuya2b"  ||
         lcmd === "sakudonge" ||
+        lcmd === "sanaej5a"  ||
         lcmd === "youmucrab" ||
         lcmd === "yukari3a") {
       msg.channel.sendFile(imgDir + lcmd + ".png", lcmd + ".png");
