@@ -93,7 +93,7 @@ function help(cmd) {
     var listsokumemes = "";
     for (i=0; i < sokumemes.length; i++)
       listsokumemes = listsokumemes + "\n- " + sokumemes[i];
-    return "**list of commands**\n"
+    return "**List of Commands**\n"
       + "\nfun: `*ding`, `*dong`, `*dice`, `*om`"
       + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`"
       + "\nhosting: `*host`, `*unhost`, `*hosting`, `ehost`"
@@ -101,7 +101,7 @@ function help(cmd) {
       + "\nuse `*help [command]` to show manuals"
 + "\n\n**Soku Meme**"
 + "\n```" + listsokumemes + "```"
-+ "\nHow to use, example: `*sanaej5a`;
++ "\nHow to use, example: `*sanaej5a`";
   }
   else if (cmd === "ding" || cmd === "dong") {
     return "**ding dong command**\n\n"
