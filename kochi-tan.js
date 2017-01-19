@@ -350,16 +350,29 @@ bot.on("message", msg => {
 
     // Emoticon
     // lewdkappa
-    if (cmd.toLowerCase() === "lewdkappa") {
-      msg.channel.sendFile(imgDir + "lewdkappa.jpg", "lewdkappa.jpg");
+    lcmd = cmd.toLowerCase();
+    if (lcmd === "lewdkappa" ||
+        lcmd === "iku2a"   ||
+        lcmd === "youmuj5a"  ||
+        lcmd === "yukari6a") {
+      msg.channel.sendFile(imgDir + lcmd + ".jpg", lcmd + ".jpg");
     }
-    else if (cmd.toLowerCase() === "playfifa") {
+    if (lcmd === "okuu3a" ||
+        lcmd === "alice5a"   ||
+        lcmd === "sakuya2b"  ||
+        lcmd === "sakudonge" ||
+        lcmd === "youmucrab" ||
+        lcmd === "yukari3a") {
+      msg.channel.sendFile(imgDir + lcmd + ".png", lcmd + ".png");
+    }
+    else if (lcmd === "playfifa") {
       msg.channel.sendMessage("https://cdn.discordapp.com/emojis/238916013679181824.png");
     }
-    else if (cmd.toLowerCase() === "throwsalt") {
-      msg.channel.sendFile(imgDir + "throwsalt.jpg", "throwsalt.jpg");
+    else if (lcmd === "throwsalt") {
+      var randomsalt = getRandomInt(1, 5);
+      msg.channel.sendFile(imgDir + "salt" + randomsalt + ".jpg", "throwsalt.jpg");
     }
-    else if (cmd.toLowerCase() === "ppap") {
+    else if (lcmd === "ppap") {
       msg.channel.sendMessage(":pen_ballpoint: :pineapple: :apple: :pen_ballpoint:");
     }
     // else if (cmd.toLowerCase() === "kappapen") {
