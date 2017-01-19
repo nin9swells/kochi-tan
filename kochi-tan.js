@@ -96,10 +96,10 @@ function help(cmd) {
     return "**List of Commands**\n"
       + "\nfun: `*ding`, `*dong`, `*dice`, `*om`"
       + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`"
-      + "\nhosting: `*host`, `*unhost`, `*hosting`, `ehost`"
+      + "\nhosting: `*host`, `*unhost`, `*hosting`, `*ehost`"
       + "\n"
       + "\nuse `*help [command]` to show manuals"
-+ "\n\n**Soku Meme**"
++ "\n\n**Soku Memes**"
 + "\n```" + listsokumemes + "```"
 + "\nHow to use, example: `*sanaej5a`";
   }
