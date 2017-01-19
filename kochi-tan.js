@@ -77,13 +77,31 @@ function validateNum(input, min, max) {
 
 function help(cmd) {
   if (cmd === "help") {
+    var sokumemes = [
+          "alice5a",
+          "iku2a",
+          "okuu3a",
+          "hijabreisen",
+          "reisenj6a",
+          "sakudonge",
+          "sanaej5a",
+          "youmucrab",
+          "youmu2",
+          "yukari3a",
+          "yukari6a"
+        ];
+    var listsokumemes = "";
+    for (i=0; i < sokumemes.length; i++)
+      listsokumemes = listsokumemes + "\n- " + sokumemes[i];
     return "**list of commands**\n"
       + "\nfun: `*ding`, `*dong`, `*dice`, `*om`"
-      + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`, "
-      + "`*alice5a`, `*iku2a`, `*okuu3a`, `*sakudonge`, `*sakuya2b`, `sanaej5a.png`, `*youmucrab`, `*youmuj5a`, `*yukari3a`, `*yukari6a`"
+      + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`"
       + "\nhosting: `*host`, `*unhost`, `*hosting`, `ehost`"
       + "\n"
-      + "\nuse `*help [command]` to show manuals";
+      + "\nuse `*help [command]` to show manuals"
++ "\n\n**Soku Meme**"
++ "\n```" + listsokumemes + "```"
++ "\nHow to use, example: `*sanaej5a`;
   }
   else if (cmd === "ding" || cmd === "dong") {
     return "**ding dong command**\n\n"
@@ -358,12 +376,15 @@ bot.on("message", msg => {
         lcmd === "yukari6a") {
       msg.channel.sendFile(imgDir + lcmd + ".jpg", lcmd + ".jpg");
     }
-    if (lcmd === "okuu3a"    ||
-        lcmd === "alice5a"   ||
-        lcmd === "sakuya2b"  ||
-        lcmd === "sakudonge" ||
-        lcmd === "sanaej5a"  ||
-        lcmd === "youmucrab" ||
+    if (lcmd === "okuu3a"      ||
+        lcmd === "alice5a"     ||
+        lcmd === "reisenj6a"   ||
+        lcmd === "hijabreisen" ||
+        lcmd === "sakuya2b"    ||
+        lcmd === "sakudonge"   ||
+        lcmd === "sanaej5a"    ||
+        lcmd === "youmucrab"   ||
+        lcmd === "youmu2"      ||
         lcmd === "yukari3a") {
       msg.channel.sendFile(imgDir + lcmd + ".png", lcmd + ".png");
     }
