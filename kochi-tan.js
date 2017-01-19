@@ -79,7 +79,8 @@ function help(cmd) {
   if (cmd === "help") {
     return "**list of commands**\n"
       + "\nfun: `*ding`, `*dong`, `*dice`, `*om`"
-      + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`"
+      + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`, "
+      + "`*alice5a`, `*iku2a`, `*okuu3a`, `*sakudonge`, `*sakuya2b`, `*youmucrab`, `*youmuj5a`, `*yukari3a`, `*yukari6a`"
       + "\nhosting: `*host`, `*unhost`, `*hosting`, `ehost`"
       + "\n"
       + "\nuse `*help [command]` to show manuals";
