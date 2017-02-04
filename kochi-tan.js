@@ -30,7 +30,8 @@ function probablyIsGreeting(msg) {
   && !isContain(msg, "besok")
   && !isContain(msg, "tomorrow")
   && !isContain(msg, "yesterday")
-  && !isContain(msg, "fate")) {
+  && !isContain(msg, "fate")
+  && !isContain(msg, "ask")) {
     return true;
   }
   return false;
@@ -79,7 +80,7 @@ function help(cmd) {
   if (cmd === "help") {
     var sokumemes = [
           "alice5a",
-          "iku2a",
+          "ikuj2a",
           "okuu3a",
           "hijabreisen",
           "reisenj6a",
@@ -97,11 +98,12 @@ function help(cmd) {
       + "\nfun: `*ding`, `*dong`, `*dice`, `*om`"
       + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`"
       + "\nhosting: `*host`, `*unhost`, `*hosting`, `*ehost`"
+      + "\nsearch: `*ud`"
       + "\n"
       + "\nuse `*help [command]` to show manuals"
-+ "\n\n**Soku Memes**"
-+ "\n```" + listsokumemes + "```"
-+ "\nHow to use, example: `*sanaej5a`";
+      + "\n\n**Soku Memes**"
+      + "\n```" + listsokumemes + "```"
+      + "\nHow to use, example: `*sanaej5a`";
   }
   else if (cmd === "ding" || cmd === "dong") {
     return "**ding dong command**\n\n"
@@ -180,7 +182,6 @@ bot.on("message", msg => {
         msg.channel.sendMessage(help());
       }
     }
-
     // DINGDONG command
     if (fullcmd.toLowerCase().startsWith("ding") || fullcmd.toLowerCase().startsWith("dong")) {
       var tmpDingDong = fullcmd.toLowerCase().replace(/ding/g, "").replace(/dong/g, "").trim();
@@ -188,7 +189,6 @@ bot.on("message", msg => {
       if (tmpDingDong.length > 0) return;
       msg.channel.sendMessage(dingdong(fullcmd));
     }
-
     // dice command
     if (cmd.toLowerCase() === "dice") {
       if (params.length > 0) {
@@ -198,7 +198,24 @@ bot.on("message", msg => {
         msg.channel.sendMessage(dice());
       }
     }
+    
+    if (cmd.toLowerCase() === "ud") {
+      if (params) {
+        var urban = require('urban'),
+        udsearch = urban(params[0]);
 
+        udsearch.first(function(udresult) {
+          console.log(udresult.definition);
+          msg.channel.sendMessage(
+                  // ":regional_indicator_u:rban :regional_indicator_d:ictionary\n" +
+                  "**Urban Dictionary**\n" + 
+                  "```markdown\n" +
+                  "* " + params[0] + "\n" +
+                  udresult.definition +
+                  "```");
+        });
+      }
+    }
     // Om Telolet Om command
     if (cmd.toLowerCase() === "om") {
       if (cmd === "OM")
@@ -371,7 +388,7 @@ bot.on("message", msg => {
     // lewdkappa
     lcmd = cmd.toLowerCase();
     if (lcmd === "lewdkappa" ||
-        lcmd === "iku2a"     ||
+        lcmd === "ikuj2a"     ||
         lcmd === "youmuj5a"  ||
         lcmd === "yukari6a") {
       msg.channel.sendFile(imgDir + lcmd + ".jpg", lcmd + ".jpg");
