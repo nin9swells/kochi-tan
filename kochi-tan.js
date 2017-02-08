@@ -238,6 +238,11 @@ bot.on("message", msg => {
       }
     }
 
+    if (cmd.toLowerCase() === "go") {
+    {
+      msg.channel.sendMessage("chicken gooOooOooOoo~");
+    }
+
     // Soku host command
     // host command
     if (cmd.toLowerCase() === "host") {
