@@ -86,6 +86,7 @@ function help(cmd) {
           "reisenj6a",
           "sakudonge",
           "sanaej5a",
+          "suika66c",
           "youmucrab",
           "youmu2",
           "yukari3a",
@@ -402,6 +403,7 @@ bot.on("message", msg => {
         || lcmd === "ikuj2a"
         || lcmd === "youmuj5a"
         || lcmd === "yukari6a"
+        || lcmd === "suika66c"
         || lcmd === "lolifuckyou") {
       msg.channel.sendFile(imgDir + lcmd + ".jpg", lcmd + ".jpg");
     }
