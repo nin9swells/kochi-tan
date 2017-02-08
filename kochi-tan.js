@@ -238,7 +238,7 @@ bot.on("message", msg => {
       }
     }
 
-    if (cmd.toLowerCase() === "go") {
+    if (cmd.toLowerCase() === "go")
     {
       msg.channel.sendMessage("chicken gooOooOooOoo~");
     }
