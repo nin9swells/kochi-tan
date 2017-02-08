@@ -89,14 +89,20 @@ function help(cmd) {
           "youmucrab",
           "youmu2",
           "yukari3a",
-          "yukari6a"
+          "yukari6a",
+          "kanakoram",
+          "reisen2c",
+          "sanae623",
+          "yukarij6a",
+          "yuyukoj2a",
+          "yuyukoj6a"
         ];
     var listsokumemes = "";
     for (i=0; i < sokumemes.length; i++)
       listsokumemes = listsokumemes + "\n- " + sokumemes[i];
     return "**List of Commands**\n"
       + "\nfun: `*ding`, `*dong`, `*dice`, `*om`"
-      + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`"
+      + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`, `*lolifuckyou`"
       + "\nhosting: `*host`, `*unhost`, `*hosting`, `*ehost`"
       + "\nsearch: `*ud`"
       + "\n"
