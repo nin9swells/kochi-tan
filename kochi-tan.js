@@ -387,10 +387,11 @@ bot.on("message", msg => {
     // Emoticon
     // lewdkappa
     lcmd = cmd.toLowerCase();
-    if (lcmd === "lewdkappa" ||
-        lcmd === "ikuj2a"     ||
-        lcmd === "youmuj5a"  ||
-        lcmd === "yukari6a") {
+    if (lcmd === "lewdkappa"   ||
+        lcmd === "ikuj2a"      ||
+        lcmd === "youmuj5a"    ||
+        lcmd === "yukari6a"    ||
+        lcmd === "lolifuckyou") {
       msg.channel.sendFile(imgDir + lcmd + ".jpg", lcmd + ".jpg");
     }
     if (lcmd === "okuu3a"      ||
