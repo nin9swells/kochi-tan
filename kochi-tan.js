@@ -387,23 +387,29 @@ bot.on("message", msg => {
     // Emoticon
     // lewdkappa
     lcmd = cmd.toLowerCase();
-    if (lcmd === "lewdkappa"   ||
-        lcmd === "ikuj2a"      ||
-        lcmd === "youmuj5a"    ||
-        lcmd === "yukari6a"    ||
-        lcmd === "lolifuckyou") {
+    if (lcmd === "lewdkappa"
+        || lcmd === "ikuj2a"
+        || lcmd === "youmuj5a"
+        || lcmd === "yukari6a"
+        || lcmd === "lolifuckyou") {
       msg.channel.sendFile(imgDir + lcmd + ".jpg", lcmd + ".jpg");
     }
-    if (lcmd === "okuu3a"      ||
-        lcmd === "alice5a"     ||
-        lcmd === "reisenj6a"   ||
-        lcmd === "hijabreisen" ||
-        lcmd === "sakuya2b"    ||
-        lcmd === "sakudonge"   ||
-        lcmd === "sanaej5a"    ||
-        lcmd === "youmucrab"   ||
-        lcmd === "youmu2"      ||
-        lcmd === "yukari3a") {
+    if (lcmd === "okuu3a"
+        || lcmd === "alice5a"
+        || lcmd === "reisenj6a"
+        || lcmd === "hijabreisen"
+        || lcmd === "sakuya2b"
+        || lcmd === "sakudonge"
+        || lcmd === "sanaej5a"
+        || lcmd === "youmucrab"
+        || lcmd === "youmu2"
+        || lcmd === "yukari3a"
+        || lcmd === "kanakoram"
+        || lcmd === "reisen2c"
+        || lcmd === "sanae623"
+        || lcmd === "yukarij6a"
+        || lcmd === "yuyukoj2a"
+        || lcmd === "yuyukoj6a") {
       msg.channel.sendFile(imgDir + lcmd + ".png", lcmd + ".png");
     }
     else if (lcmd === "playfifa") {
