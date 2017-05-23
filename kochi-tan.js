@@ -169,6 +169,10 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+bot.on("messageDelete", msg => {
+  console.log("[" + (new Date()).toISOString() + "] [Delete] content:[" + msg.content + "] author:[" + msg.author.username + "]");
+});
+
 bot.on("message", msg => {
   // console.log(msg.author.username);
 
@@ -286,7 +290,6 @@ bot.on("message", msg => {
 
     // ehost command
     if (cmd.toLowerCase() === "ehost") {
-      console.log("Command: ehost");
 
       // If hostIp is empty, show manuals
       if (!(params && params[0] && params[1])) {
@@ -301,14 +304,17 @@ bot.on("message", msg => {
           var hostIp = "";
           var hostNote = "";
 
-          console.log("Command: ehost, param 0 is not empty");
+          var dnsResolvedTime = ""; // initialize
 
           db.get("SELECT earthvpn_server_address FROM earthvpn_server WHERE earthvpn_server_name ='" + hostName +"'", function(err, row) {
             if (row) {
-              console.log("Command: ehost, GET earthvpn_server_address: " + row.earthvpn_server_address);
-              dns.resolve4(row.earthvpn_server_address, function(err, earthvpn_ip) {
-                if (err) throw err;
-                if (earthvpn_ip) hostIp = earthvpn_ip[0];
+              console.log("[" + (new Date()).toISOString() + "] [Command:ehost] GET earthvpn_server_address: " + row.earthvpn_server_address);
+              dns.resolve4(row.earthvpn_server_address, function(dnserr, earthvpn_ip) {
+                if (dnserr) console.log("[" + (new Date()).toISOString() + "] [Error] Failed to resolve DNS: " + row.earthvpn_server_address);
+                if (earthvpn_ip) {
+                  hostIp = earthvpn_ip[0];
+                  dnsResolvedTime = (new Date()).toISOString();
+                }
               });
             }
           });
@@ -317,6 +323,14 @@ bot.on("message", msg => {
           setTimeout(function() {
             if (hostIp === "") {
               msg.channel.sendMessage("Server not found.");
+
+              setTimeout(function() {
+                if (dnsResolvedTime === "")
+                  console.log("[" + (new Date()).toISOString() + "] [Error] Server not found weirdly");
+                else
+                console.log("[" + (new Date()).toISOString() + "] [Error] Server not found on time: command issued on: " +
+                            hostStartTime + " and resolved on: " + dnsResolvedTime);
+              }, 5000);
               return;
             }
             // add port to ip
