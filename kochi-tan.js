@@ -7,9 +7,42 @@ var kochitanId = "243350722672852992";
 var rootDir = "/opt/discord-bot/kochi-tan/"
 var imgDir = rootDir + "data/img/"
 
-
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(rootDir + "data/db/sokuhost");
+
+var sokumemejpg =
+    ["ikuj2a",
+    "youmuj5a",
+    "yukari6a",
+    "suika66c"];
+var sokumemepng =
+    ["okuu3a",
+    "alice5a",
+    "reisenj6a",
+    "hijabreisen",
+    "sakuya2b",
+    "sakudonge",
+    "sanaej5a",
+    "youmucrab",
+    "youmu2",
+    "yukari3a",
+    "kanakoram",
+    "komachij2a",
+    "okuu4a",
+    "remif5a",
+    "reisen2c",
+    "sanae623",
+    "suikaj5a",
+    "suwakoj8a",
+    "yukarij6a",
+    "yuyukoj2a",
+    "yuyukoj6a"];
+
+var commonmemejpg = ["lewdkappa", "lolifuckyou"];
+var commonmemepng = [];
+
+var combinedmemejpg = commonmemejpg.concat(sokumemejpg);
+var combinedmemepng = commonmemepng.concat(sokumemepng);
 
 function reverse(s){
     return s.split("").reverse().join("");
@@ -76,31 +109,23 @@ function validateNum(input, min, max) {
     return num >= min && num <= max && input === num.toString();
 }
 
+function sokumemehelp() {
+  var listsokumemes = "";
+  for (i=0; i < sokumemejpg.length; i++)
+    listsokumemes = listsokumemes + "\n- " + sokumemejpg[i];
+
+  for (i=0; i < sokumemepng.length; i++)
+    listsokumemes = listsokumemes + "\n- " + sokumemepng[i];
+
+
+  return "**Soku Memes**"
+    + "\n```" + listsokumemes + "```"
+    + "\nHow to use, example: `*sanaej5a`";
+}
+
 function help(cmd) {
   if (cmd === "help") {
-    var sokumemes = [
-          "alice5a",
-          "ikuj2a",
-          "okuu3a",
-          "hijabreisen",
-          "reisenj6a",
-          "sakudonge",
-          "sanaej5a",
-          "suika66c",
-          "youmucrab",
-          "youmu2",
-          "yukari3a",
-          "yukari6a",
-          "kanakoram",
-          "reisen2c",
-          "sanae623",
-          "yukarij6a",
-          "yuyukoj2a",
-          "yuyukoj6a"
-        ];
-    var listsokumemes = "";
-    for (i=0; i < sokumemes.length; i++)
-      listsokumemes = listsokumemes + "\n- " + sokumemes[i];
+
     return "**List of Commands**\n"
       + "\nfun: `*ding`, `*dong`, `*dice`, `*om`"
       + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`, `*lolifuckyou`"
@@ -109,8 +134,11 @@ function help(cmd) {
       + "\n"
       + "\nuse `*help [command]` to show manuals"
       + "\n\n**Soku Memes**"
-      + "\n```" + listsokumemes + "```"
-      + "\nHow to use, example: `*sanaej5a`";
+      + "\n Use `*help sokumeme` to show list of soku memes";
+  }
+  else if (cmd === "sokumeme") {
+    console.log("testayee");
+    return sokumemehelp();
   }
   else if (cmd === "ding" || cmd === "dong") {
     return "**ding dong command**\n\n"
@@ -413,30 +441,10 @@ bot.on("message", msg => {
     // Emoticon
     // lewdkappa
     lcmd = cmd.toLowerCase();
-    if (lcmd === "lewdkappa"
-        || lcmd === "ikuj2a"
-        || lcmd === "youmuj5a"
-        || lcmd === "yukari6a"
-        || lcmd === "suika66c"
-        || lcmd === "lolifuckyou") {
+    if (combinedmemejpg.includes(lcmd) ) {
       msg.channel.sendFile(imgDir + lcmd + ".jpg", lcmd + ".jpg");
     }
-    if (lcmd === "okuu3a"
-        || lcmd === "alice5a"
-        || lcmd === "reisenj6a"
-        || lcmd === "hijabreisen"
-        || lcmd === "sakuya2b"
-        || lcmd === "sakudonge"
-        || lcmd === "sanaej5a"
-        || lcmd === "youmucrab"
-        || lcmd === "youmu2"
-        || lcmd === "yukari3a"
-        || lcmd === "kanakoram"
-        || lcmd === "reisen2c"
-        || lcmd === "sanae623"
-        || lcmd === "yukarij6a"
-        || lcmd === "yuyukoj2a"
-        || lcmd === "yuyukoj6a") {
+    if (combinedmemepng.includes(lcmd)) {
       msg.channel.sendFile(imgDir + lcmd + ".png", lcmd + ".png");
     }
     else if (lcmd === "playfifa") {
