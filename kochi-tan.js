@@ -285,10 +285,10 @@ bot.on("message", msg => {
     // Help command
     if (lcmd === "help") {
       if (params) {
-        msg.channel.sendMessage(help(params[0]));
+        msg.channel.send(help(params[0]));
       }
       else {
-        msg.channel.sendMessage(help());
+        msg.channel.send(help());
       }
     }
     // DINGDONG command
@@ -296,15 +296,15 @@ bot.on("message", msg => {
       var tmpDingDong = fullcmd.toLowerCase().replace(/ding/g, "").replace(/dong/g, "").trim();
 
       if (tmpDingDong.length > 0) return;
-      msg.channel.sendMessage(dingdong(fullcmd));
+      msg.channel.send(dingdong(fullcmd));
     }
     // dice command
     if (lcmd === "dice") {
       if (params.length > 0) {
-        msg.channel.sendMessage(dice(params[0]));
+        msg.channel.send(dice(params[0]));
       }
       else {
-        msg.channel.sendMessage(dice());
+        msg.channel.send(dice());
       }
     }
     
@@ -315,7 +315,7 @@ bot.on("message", msg => {
 
         udsearch.first(function(udresult) {
           console.log(udresult.definition);
-          msg.channel.sendMessage(
+          msg.channel.send(
                   // ":regional_indicator_u:rban :regional_indicator_d:ictionary\n" +
                   "**Urban Dictionary**\n" + 
                   "```markdown\n" +
@@ -329,21 +329,21 @@ bot.on("message", msg => {
     if (lcmd === "om") {
       if (cmd === "OM")
       {
-        msg.channel.sendMessage("TELOLET OM!");
+        msg.channel.send("TELOLET OM!");
       }
       else if (cmd === "Om")
       {
-        msg.channel.sendMessage("Telolet Om");
+        msg.channel.send("Telolet Om");
       }
       else if (cmd === "om")
       {
-        msg.channel.sendMessage("telolet om");
+        msg.channel.send("telolet om");
       }
     }
 
     if (lcmd === "go")
     {
-      msg.channel.sendMessage("chicken gooOooOooOoo~");
+      msg.channel.send("chicken gooOooOooOoo~");
     }
 
     if (lcmd === "join") {
@@ -351,14 +351,14 @@ bot.on("message", msg => {
         msg.channel.send("this command only available in ITG discord server");
       }
       else if (params.length && params[0] === "") {
-        msg.channel.sendMessage(help(lcmd));
+        msg.channel.send(help(lcmd));
       }
       else if (params.length) {
         if (params[0]) {
           var roleToJoin = params[0].toLowerCase();
           if (!availableRoles.includes(roleToJoin)) {
-            msg.channel.sendMessage("Role is not available to join");
-            msg.channel.sendMessage(help(lcmd));
+            msg.channel.send("Role is not available to join");
+            msg.channel.send(help(lcmd));
           }
           else {
             var roleToJoinId = roleMap.get(roleToJoin);
@@ -384,13 +384,13 @@ bot.on("message", msg => {
         msg.channel.send("this command only available in ITG discord server");
       }
       else if (params.length && params[0] === "") {
-        msg.channel.sendMessage(help(lcmd));
+        msg.channel.send(help(lcmd));
       }
       else if (params.length) {
         if (params[0]) {
           var roleToLeave = params[0].toLowerCase();
           if (!availableRoles.includes(roleToLeave)) {
-            msg.channel.sendMessage(help(lcmd));
+            msg.channel.send(help(lcmd));
           }
           else {
             var roleToLeaveId = roleMap.get(roleToLeave);
@@ -421,7 +421,7 @@ bot.on("message", msg => {
 
       // If hostIp is empty, show manuals
       if (params.length && params[0] === "") {
-        msg.channel.sendMessage(help(lcmd));
+        msg.channel.send(help(lcmd));
       }
       // If hostIp is defined
       else if (params.length) {
@@ -437,7 +437,7 @@ bot.on("message", msg => {
         // if (!hostIp.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})/))
         if (!validateIpAndPort(hostIp))
         {
-          msg.channel.sendMessage("Don't try to fool me Kochi-tan! Please input a valid ip address and port.");
+          msg.channel.send("Don't try to fool me Kochi-tan! Please input a valid ip address and port.");
           return;
         }
         if (params[1]) {
@@ -447,7 +447,7 @@ bot.on("message", msg => {
         db.run("DELETE FROM hosts WHERE host_owner = ?", hostOwner);
         db.run("INSERT INTO hosts VALUES (?, ?, ?, ?)", hostOwner, hostIp, hostStartTime, hostNote);
 
-        msg.channel.sendMessage(":video_game: :arrow_up_small: " + hostOwner + " is hosting at " + hostIp + " " + hostNote);
+        msg.channel.send(":video_game: :arrow_up_small: " + hostOwner + " is hosting at " + hostIp + " " + hostNote);
       }
     }
 
@@ -456,7 +456,7 @@ bot.on("message", msg => {
 
       // If hostIp is empty, show manuals
       if (!(params && params[0] && params[1])) {
-        msg.channel.sendMessage(help(cmd));
+        msg.channel.send(help(cmd));
       }
       // If hostName is defined
       else if (params.length) {
@@ -485,7 +485,7 @@ bot.on("message", msg => {
           // wait until DNS resolve is finished
           setTimeout(function() {
             if (hostIp === "") {
-              msg.channel.sendMessage("Server not found.");
+              msg.channel.send("Server not found.");
 
               setTimeout(function() {
                 if (dnsResolvedTime === "")
@@ -501,11 +501,11 @@ bot.on("message", msg => {
               hostIp = hostIp + ":" + params[1];
               if (!validateIpAndPort(hostIp))
               {
-                msg.channel.sendMessage("Don't try to fool Kochi-tan! Please input a valid port number.");
+                msg.channel.send("Don't try to fool Kochi-tan! Please input a valid port number.");
                 return;
               }
             } else {
-              msg.channel.sendMessage(help(cmd));
+              msg.channel.send(help(cmd));
             }
 
             // get ehost note
@@ -516,7 +516,7 @@ bot.on("message", msg => {
             db.run("DELETE FROM hosts WHERE host_owner = ?", hostOwner);
             db.run("INSERT INTO hosts VALUES (?, ?, ?, ?)", hostOwner, hostIp, hostStartTime, hostNote);
     
-            msg.channel.sendMessage(":video_game: :arrow_up_small: " + hostOwner + " is hosting at " + hostIp + " " + hostNote);
+            msg.channel.send(":video_game: :arrow_up_small: " + hostOwner + " is hosting at " + hostIp + " " + hostNote);
           }, 500);
         }
       } // endif hostName is defined
@@ -528,7 +528,7 @@ bot.on("message", msg => {
 
       db.get("SELECT * FROM hosts WHERE host_owner='" + hostOwner +"'", function(err, row) {
         if (row) {
-          msg.channel.sendMessage(":video_game: :small_red_triangle_down: " + hostOwner + " (" + row.host_ip + ") stopped hosting.");
+          msg.channel.send(":video_game: :small_red_triangle_down: " + hostOwner + " (" + row.host_ip + ") stopped hosting.");
         }
       });
 
@@ -559,10 +559,10 @@ bot.on("message", msg => {
           }
 
           if (hostNum == 0) {
-            msg.channel.sendMessage("There are no open hosts. Host one!");
+            msg.channel.send("There are no open hosts. Host one!");
           }
           else {
-            msg.channel.sendMessage(":video_game: **List of Hosts** :video_game:\n"
+            msg.channel.send(":video_game: **List of Hosts** :video_game:\n"
               + "```markdown\n"
               + listHostMsg
               + "```"
@@ -582,24 +582,24 @@ bot.on("message", msg => {
       msg.channel.sendFile(imgDir + lcmd + ".png", lcmd + ".png");
     }
     else if (lcmd === "playfifa") {
-      msg.channel.sendMessage("https://cdn.discordapp.com/emojis/238916013679181824.png");
+      msg.channel.send("https://cdn.discordapp.com/emojis/238916013679181824.png");
     }
     else if (lcmd === "throwsalt") {
       var randomsalt = getRandomInt(1, 5);
       msg.channel.sendFile(imgDir + "salt" + randomsalt + ".jpg", "throwsalt.jpg");
     }
     else if (lcmd === "ppap") {
-      msg.channel.sendMessage(":pen_ballpoint: :pineapple: :apple: :pen_ballpoint:");
+      msg.channel.send(":pen_ballpoint: :pineapple: :apple: :pen_ballpoint:");
     }
     // else if (cmd.toLowerCase() === "kappapen") {
-    //   msg.channel.sendMessage(":pen_ballpoint: :pineapple: :apple: :pen_ballpoint:");
-    //   msg.channel.sendMessage(":point_right: :kappa: :ok_hand:");
+    //   msg.channel.send(":pen_ballpoint: :pineapple: :apple: :pen_ballpoint:");
+    //   msg.channel.send(":point_right: :kappa: :ok_hand:");
     // }
     // else if (cmd.toLowerCase() === "kappanaika") {
     //   var kappaemote = msg.guild.emojis.get(243374250323345408);
     //   console.log(msg.guild.emojis);
     //   console.log(kappaemote);
-    //   //msg.channel.sendMessage(kappaemote.toString());
+    //   //msg.channel.send(kappaemote.toString());
     // }
   }
 
@@ -615,7 +615,7 @@ bot.on("message", msg => {
 
     // Help commands
     if (params.startsWith("help")) {
-      msg.channel.sendMessage(help("help"));
+      msg.channel.send(help("help"));
     }
 
     // I love you commands
@@ -643,10 +643,10 @@ bot.on("message", msg => {
   
           if (num_of_answers > 0) {
             var choosen_ans = getRandomInt(0, num_of_answers);
-            msg.channel.sendMessage(rows[choosen_ans].answer_content);
+            msg.channel.send(rows[choosen_ans].answer_content);
           }
           else {
-            msg.channel.sendMessage("Somehow, I don't know to answer that question. Gomen ne");
+            msg.channel.send("Somehow, I don't know to answer that question. Gomen ne");
           }
   
         });
@@ -685,7 +685,7 @@ bot.on("message", msg => {
       {
         db.get("SELECT id FROM greetingstatus", function(err, row) {
           if (row && row.id == 1) {
-            msg.channel.sendMessage("Morninggu~ <3");
+            msg.channel.send("Morninggu~ <3");
           }
         });
         db.run("UPDATE greetingstatus SET id=0");
@@ -704,7 +704,7 @@ bot.on("message", msg => {
       {
         db.get("SELECT id FROM greetingstatus", function(err, row) {
           if (row && row.id == 0) {
-            msg.channel.sendMessage("Naito~ <3");
+            msg.channel.send("Naito~ <3");
           }
         });
         db.run("UPDATE greetingstatus SET id=1");
