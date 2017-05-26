@@ -364,12 +364,12 @@ bot.on("message", msg => {
             var roleToJoinId = roleMap.get(roleToJoin);
 
             if (msg.member.roles.has(roleToJoinId)) {
-              msg.channel.send("You are already member of " + roleToJoin);
+              msg.reply("You are already member of " + roleToJoin);
             }
             else
             {
               msg.member.addRole(roleToJoinId);
-              msg.channel.send("You're added to " + roleToJoin);
+              msg.reply("You're added to " + roleToJoin);
               console.log("[role]" + msg.author.username + "@" + msg.author.id + " added to " + roleToJoin);
             }
           }
@@ -396,11 +396,11 @@ bot.on("message", msg => {
             var roleToLeaveId = roleMap.get(roleToLeave);
 
             if (!msg.member.roles.has(roleToLeaveId)) {
-              msg.channel.send("You are not member of " + roleToLeave);
+              msg.reply("You are not member of " + roleToLeave);
             }
             else {
               msg.member.removeRole(roleToLeaveId);
-              msg.channel.send("You're removed from " + roleToLeave);
+              msg.reply("You're removed from " + roleToLeave);
               console.log("[role]" + msg.author.username + "@" + msg.author.id + " removed from " + roleToJoin);
             }
           }
