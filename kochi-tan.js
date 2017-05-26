@@ -2,13 +2,31 @@ const dns = require('dns');
 var Discord = require("discord.js");
 var bot = new Discord.Client();
 
+var exec = require('child_process').exec;
+var schedule = require('node-schedule');
+
 // Global vars
-var kochitanId = "243350722672852992";
+const kochitanId = "243350722672852992";
+const ownerId = "220729183679152138"; // nin9swells
+const itgServerId = "211451032847384576";
+var roleMap = new Map()
+roleMap.set("shadowverse", "242640431274262528");
+roleMap.set("ojey", "268651296721076224");
+roleMap.set("asmr", "317378195894697987");
+
+var availableRoles = [];
+for (var key of roleMap.keys()) {
+  availableRoles.push(key);
+}
+
+
 var rootDir = "/opt/discord-bot/kochi-tan/"
 var imgDir = rootDir + "data/img/"
 
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(rootDir + "data/db/sokuhost");
+
+var voicemt = false;
 
 var sokumemejpg =
     ["ikuj2a",
@@ -131,6 +149,7 @@ function help(cmd) {
       + "\nemote: `*lewdkappa`, `*playfifa`, `*ppap`, `*throwsalt`, `*lolifuckyou`"
       + "\nhosting: `*host`, `*unhost`, `*hosting`, `*ehost`"
       + "\nsearch: `*ud`"
+      + "\nutility: `*join`, `*leave`"
       + "\n"
       + "\nuse `*help [command]` to show manuals"
       + "\n\n**Soku Memes**"
@@ -156,6 +175,35 @@ function help(cmd) {
     return "**OM TELOLET OM command**\n\n"
       + "You can also use `*Om` and `*OM`\n";
   }
+  else if (cmd === "join") {
+    var msgAvailableRoles = "";
+    for (i=0; i<availableRoles.length; i++) {
+      msgAvailableRoles += "- " +availableRoles[i] + "\n";
+    }
+
+    return "**join command**\n\n"
+      + "Command to join a Discord role.\n"
+      + "example:\n"
+      + "```\n*join shadowverse```\n"
+      + "List of available roles:\n```"
+      + msgAvailableRoles
+      + "```";
+  }
+  else if (cmd === "leave") {
+    var msgAvailableRoles = "";
+    for (i=0; i<availableRoles.length; i++) {
+      msgAvailableRoles += "- " +availableRoles[i] + "\n";
+    }
+
+    return "**leave command**\n\n"
+      + "Command to leave a Discord role.\n"
+      + "example:\n"
+      + "```\n*leave shadowverse```\n"
+      + "List of available roles:\n```"
+      + msgAvailableRoles
+      + "```";
+  }
+
   else if (cmd === "host") {
     return "**host command**\n\n"
             + "*host __ip__[:port] [comment]\n\n"
@@ -193,6 +241,17 @@ function help(cmd) {
   }
 }
 
+function restartKochiFm() {
+  restarting = exec('sudo pm2 restart musicbot', // command line argument directly in string
+  function (error, stdout, stderr) {
+    console.log('Kochifm restarting stdout: ' + stdout);
+    console.log('Kochifm restarting stderr: ' + stderr);
+    if (error !== null) {
+      console.log('Kochifm restarting exec error: ' + error);
+    }
+  }); // end of exec function
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -208,12 +267,23 @@ bot.on("message", msg => {
   if (msg.content.startsWith("*") && msg.content.replace(/\*/g, "").length == msg.content.length - 1) {
     var fullcmd = msg.content.replace("*", "").trim();
     var cmd = fullcmd.replace(/\s.*/g, "");
+    var lcmd = cmd.toLowerCase();
     var params = fullcmd.replace(/^\S*/g, "").replace(" ", "").replace(/\s+/g, " ").split(" ");
     //console.log(cmd + "---" + params);
     //console.log(params[0]);
 
+    // Admin command // admin command
+    if (msg.author.id.toString() === ownerId) {
+      if (lcmd === "voicemt") {
+        voicemt = !voicemt; 
+      }
+      else if (lcmd === "restartkochifm") {
+        restartKochiFm();
+      }
+    }
+
     // Help command
-    if (cmd.toLowerCase() === "help") {
+    if (lcmd === "help") {
       if (params) {
         msg.channel.sendMessage(help(params[0]));
       }
@@ -229,7 +299,7 @@ bot.on("message", msg => {
       msg.channel.sendMessage(dingdong(fullcmd));
     }
     // dice command
-    if (cmd.toLowerCase() === "dice") {
+    if (lcmd === "dice") {
       if (params.length > 0) {
         msg.channel.sendMessage(dice(params[0]));
       }
@@ -238,7 +308,7 @@ bot.on("message", msg => {
       }
     }
     
-    if (cmd.toLowerCase() === "ud") {
+    if (lcmd === "ud") {
       if (params) {
         var urban = require('urban'),
         udsearch = urban(params[0]);
@@ -256,7 +326,7 @@ bot.on("message", msg => {
       }
     }
     // Om Telolet Om command
-    if (cmd.toLowerCase() === "om") {
+    if (lcmd === "om") {
       if (cmd === "OM")
       {
         msg.channel.sendMessage("TELOLET OM!");
@@ -271,14 +341,79 @@ bot.on("message", msg => {
       }
     }
 
-    if (cmd.toLowerCase() === "go")
+    if (lcmd === "go")
     {
       msg.channel.sendMessage("chicken gooOooOooOoo~");
     }
 
+    if (lcmd === "join") {
+      if (msg.guild.id != itgServerId) {
+        msg.channel.send("this command only available in ITG discord server");
+      }
+      else if (params.length && params[0] === "") {
+        msg.channel.sendMessage(help(lcmd));
+      }
+      else if (params.length) {
+        if (params[0]) {
+          var roleToJoin = params[0].toLowerCase();
+          if (!availableRoles.includes(roleToJoin)) {
+            msg.channel.sendMessage("Role is not available to join");
+            msg.channel.sendMessage(help(lcmd));
+          }
+          else {
+            var roleToJoinId = roleMap.get(roleToJoin);
+
+            if (msg.member.roles.has(roleToJoinId)) {
+              msg.channel.send("You are already member of " + roleToJoin);
+            }
+            else
+            {
+              msg.member.addRole(roleToJoinId);
+              msg.channel.send("You're added to " + roleToJoin);
+              console.log("[role]" + msg.author.username + "@" + msg.author.id + " added to " + roleToJoin);
+            }
+          }
+        }
+        else {
+          console.log("something wrong happen on join command, can't read param");
+        }
+      }
+    }
+    else if (lcmd === "leave") {
+      if (msg.guild.id != itgServerId) {
+        msg.channel.send("this command only available in ITG discord server");
+      }
+      else if (params.length && params[0] === "") {
+        msg.channel.sendMessage(help(lcmd));
+      }
+      else if (params.length) {
+        if (params[0]) {
+          var roleToLeave = params[0].toLowerCase();
+          if (!availableRoles.includes(roleToLeave)) {
+            msg.channel.sendMessage(help(lcmd));
+          }
+          else {
+            var roleToLeaveId = roleMap.get(roleToLeave);
+
+            if (!msg.member.roles.has(roleToLeaveId)) {
+              msg.channel.send("You are not member of " + roleToLeave);
+            }
+            else {
+              msg.member.removeRole(roleToLeaveId);
+              msg.channel.send("You're removed from " + roleToLeave);
+              console.log("[role]" + msg.author.username + "@" + msg.author.id + " removed from " + roleToJoin);
+            }
+          }
+        }
+        else {
+          console.log("something wrong happen on leave command, can't read param");
+        }
+      }
+    }
+
     // Soku host command
     // host command
-    if (cmd.toLowerCase() === "host") {
+    if (lcmd === "host") {
       var hostOwner = msg.author.username;
       var hostIp = "";
       var hostStartTime = (new Date()).toISOString();
@@ -286,7 +421,7 @@ bot.on("message", msg => {
 
       // If hostIp is empty, show manuals
       if (params.length && params[0] === "") {
-        msg.channel.sendMessage(help(cmd));
+        msg.channel.sendMessage(help(lcmd));
       }
       // If hostIp is defined
       else if (params.length) {
@@ -317,7 +452,7 @@ bot.on("message", msg => {
     }
 
     // ehost command
-    if (cmd.toLowerCase() === "ehost") {
+    if (lcmd === "ehost") {
 
       // If hostIp is empty, show manuals
       if (!(params && params[0] && params[1])) {
@@ -388,7 +523,7 @@ bot.on("message", msg => {
     } // endif ehost
 
     // unhost command
-    if (cmd.toLowerCase() === "unhost") {
+    if (lcmd === "unhost") {
       var hostOwner = msg.author.username;
 
       db.get("SELECT * FROM hosts WHERE host_owner='" + hostOwner +"'", function(err, row) {
@@ -400,7 +535,7 @@ bot.on("message", msg => {
       db.run("DELETE FROM hosts WHERE host_owner = ?", hostOwner);
     }
     // hosting command, to list all active hosts
-    if (cmd.toLowerCase() === "hosting") {
+    if (lcmd === "hosting") {
       db.run("DELETE FROM hosts WHERE (julianday('now') - julianday(host_start_time)) * 24 > 3");
 
       // setTimeout to wait delete process finished
@@ -440,7 +575,6 @@ bot.on("message", msg => {
 
     // Emoticon
     // lewdkappa
-    lcmd = cmd.toLowerCase();
     if (combinedmemejpg.includes(lcmd) ) {
       msg.channel.sendFile(imgDir + lcmd + ".jpg", lcmd + ".jpg");
     }
@@ -487,7 +621,7 @@ bot.on("message", msg => {
     // I love you commands
     if (isContain(msg.content.toLowerCase(), "i love you")) {
       var postmsg = "";
-      if (msg.author.username.toString() === "nin9swells") {
+      if (msg.author.id.toString() === ownerId) {
           postmsg = " love you too <3"
       }
       msg.channel.sendFile(imgDir + "subaruthx.png", "arigatou.png", "arigatou~" + postmsg);
@@ -593,6 +727,48 @@ bot.on("message", msg => {
 
 bot.on('ready', () => {
   console.log('Ready to serve you, goshuujin-sama!');
+
+//  var jobmusicbot = schedule.scheduleJob('30 * * * * *', function() {
+//    console.log("job scheduler kochifm check is running ...");
+//
+//    // console.log(bot.users);
+//    console.log(bot.channels.get("id", "277077834583769088"));
+
+
+    // var currkochifm = bot.channels.get("id", "277077834583769088").members.get("id", kochitanId);
+    // if (!currkochifm) restartKochiFm();
+    // else console.log("kochifm is still running, didn't restart");
+  //});
 });
+
+//var jobmusicbot = schedule.scheduleJob('30 * * * * *', function() {
+//  console.log("job scheduler kochifm check is running ...");
+//
+//  kfm_chk_session = new Discord.Client();
+//  kfm_chk_session.on('ready', () => {
+//    console.log("onready kochifm is triggered");
+//    var currkochifm = kfm_chk_session.user;
+//    if (currkochifm.voiceChannel == null) {
+//      restartKochiFm();
+//    }
+//    else {
+//      console.log("kochifm is still running, didn't restart");
+//    }
+//  });
+//
+//  // register on ready before login
+//  kfm_chk_session.login(process.env.DISCORD_TOKEN);
+//});
+
+// bot.on('voiceLeave', function(voicechan, usr) {
+//   console.log("voiceLeave triggered");
+//   if (!voicemt) {
+//     console.log("kochifm is not on maintenance, proceeding restarting it");
+//     if (usr.id.toString() === kochitanId && voicechan.id.toString() === "277077834583769088") { // kochifm 
+//       console.log("Kochitan just leave from kochifm, restarting ...");
+//       restartKochiFm();
+//     }
+//   } // end of !voicemt
+// });
 
 bot.login(process.env.DISCORD_TOKEN);
