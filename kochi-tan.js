@@ -252,6 +252,29 @@ function restartKochiFm() {
   }); // end of exec function
 }
 
+function restartWakowako() {
+  restarting = exec('sudo pm2 restart wakowako', // command line argument directly in string
+  function (error, stdout, stderr) {
+    console.log('Wakowako restarting stdout: ' + stdout);
+    console.log('Wakowako restarting stderr: ' + stderr);
+    if (error !== null) {
+      console.log('Wakowako restarting exec error: ' + error);
+    }
+  }); // end of exec function
+}
+
+function stopWakowako() {
+  restarting = exec('sudo pm2 stop wakowako', // command line argument directly in string
+  function (error, stdout, stderr) {
+    console.log('Wakowako stopping stdout: ' + stdout);
+    console.log('Wakowako stopping stderr: ' + stderr);
+    if (error !== null) {
+      console.log('Wakowako stopping exec error: ' + error);
+    }
+  }); // end of exec function
+}
+
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -279,6 +302,24 @@ bot.on("message", msg => {
       }
       else if (lcmd === "restartkochifm") {
         restartKochiFm();
+      }
+      else if (lcmd === "restartwakowako") {
+        restartWakowako();
+      }
+      else if (lcmd === "stopwakowako") {
+        stopWakowako();
+      }
+      else if (lcmd === "updateavatar") {
+        if (msg.attachments.first()) {
+          msg.channel.send("Ok goshujin-sama, processing...");
+          var newAvaUrl = msg.attachments.first().url
+          bot.user.setAvatar(newAvaUrl)
+            .then(user => msg.channel.send("New avatar setto!"))
+            .catch(console.error);
+        }
+        else {
+          msg.channel.send("Please provide a picture on attachment");
+        }
       }
     }
 
