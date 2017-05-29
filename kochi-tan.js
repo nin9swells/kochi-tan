@@ -274,6 +274,12 @@ function stopWakowako() {
   }); // end of exec function
 }
 
+function fullparam(param) {
+  return param.slice(0).join(" ");
+}
+function fullparam(param, startParam) {
+  return param.slice(startParam - 1).join(" ");
+}
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -319,6 +325,16 @@ bot.on("message", msg => {
         }
         else {
           msg.channel.send("Please provide a picture on attachment");
+        }
+      }
+      else if (lcmd === "updatestatus") {
+        if (params) {
+          console.log(params);
+          console.log(fullparam(params));
+          var game = fullparam(params);
+          bot.user.setGame(game)
+            .then(user => msg.channel.send("I'm playing " + game))
+            .catch(console.error);
         }
       }
     }
