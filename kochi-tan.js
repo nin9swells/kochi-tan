@@ -26,6 +26,7 @@ var imgDir = rootDir + "data/img/"
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(rootDir + "data/db/sokuhost");
 
+var globalmt = false;
 var voicemt = false;
 
 var sokumemejpg =
@@ -36,6 +37,7 @@ var sokumemejpg =
 var sokumemepng =
     ["okuu3a",
     "alice5a",
+    "cirno5c",
     "reisenj6a",
     "hijabreisen",
     "sakuya2b",
