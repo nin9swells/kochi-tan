@@ -294,8 +294,6 @@ bot.on("messageDelete", msg => {
 bot.on("message", msg => {
   // console.log(msg.author.username);
 
-  console.log(globalmt);
-  console.log(msg.guild.id);
   if (globalmt == "true") {
     if (msg.guild.id != botPlaygroundServerId) {
       return;
