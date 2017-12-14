@@ -26,7 +26,7 @@ var imgDir = rootDir + "data/img/"
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(rootDir + "data/db/sokuhost");
 
-var globalmt = false;
+var globalmt = process.env.MT_MODE;
 var voicemt = false;
 
 var sokumemejpg =
@@ -84,7 +84,8 @@ function probablyIsGreeting(msg) {
   && !isContain(msg, "tomorrow")
   && !isContain(msg, "yesterday")
   && !isContain(msg, "fate")
-  && !isContain(msg, "ask")) {
+  && !isContain(msg, "ask")
+  && !isContain(msg, "definite")) {
     return true;
   }
   return false;
@@ -158,7 +159,6 @@ function help(cmd) {
       + "\n Use `*help sokumeme` to show list of soku memes";
   }
   else if (cmd === "sokumeme") {
-    console.log("testayee");
     return sokumemehelp();
   }
   else if (cmd === "ding" || cmd === "dong") {
@@ -293,11 +293,19 @@ bot.on("messageDelete", msg => {
 
 bot.on("message", msg => {
   // console.log(msg.author.username);
-  if (globalmt) {
+
+  console.log(globalmt);
+  console.log(msg.guild.id);
+  if (globalmt == "true") {
     if (msg.guild.id != botPlaygroundServerId) {
       return;
     }
   }
+  else {
+    if (msg.guild.id == botPlaygroundServerId) {
+      return;
+    }
+  } 
 
 
   // * commands
@@ -656,16 +664,6 @@ bot.on("message", msg => {
     else if (lcmd === "ppap") {
       msg.channel.send(":pen_ballpoint: :pineapple: :apple: :pen_ballpoint:");
     }
-    // else if (cmd.toLowerCase() === "kappapen") {
-    //   msg.channel.send(":pen_ballpoint: :pineapple: :apple: :pen_ballpoint:");
-    //   msg.channel.send(":point_right: :kappa: :ok_hand:");
-    // }
-    // else if (cmd.toLowerCase() === "kappanaika") {
-    //   var kappaemote = msg.guild.emojis.get(243374250323345408);
-    //   console.log(msg.guild.emojis);
-    //   console.log(kappaemote);
-    //   //msg.channel.send(kappaemote.toString());
-    // }
   }
 
   // Kochi-tan's mention
