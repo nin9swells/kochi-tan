@@ -9,6 +9,7 @@ var schedule = require('node-schedule');
 const kochitanId = "243350722672852992";
 const ownerId = "220729183679152138"; // nin9swells
 const itgServerId = "211451032847384576";
+const botPlaygroundServerId = "317217154350972928";
 var roleMap = new Map()
 roleMap.set("shadowverse", "242640431274262528");
 roleMap.set("ojey", "268651296721076224");
@@ -19,14 +20,13 @@ for (var key of roleMap.keys()) {
   availableRoles.push(key);
 }
 
-
 var rootDir = "/opt/discord-bot/kochi-tan/"
 var imgDir = rootDir + "data/img/"
 
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(rootDir + "data/db/sokuhost");
 
-var globalmt = false;
+var globalmt = true;
 var voicemt = false;
 
 var sokumemejpg =
@@ -293,6 +293,12 @@ bot.on("messageDelete", msg => {
 
 bot.on("message", msg => {
   // console.log(msg.author.username);
+  if (globalmt) {
+    if (msg.guild.id != botPlaygroundServerId) {
+      return;
+    }
+  }
+
 
   // * commands
   if (msg.content.startsWith("*") && msg.content.replace(/\*/g, "").length == msg.content.length - 1) {
