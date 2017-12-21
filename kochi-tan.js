@@ -6,6 +6,9 @@ var exec = require('child_process').exec;
 var schedule = require('node-schedule');
 
 // Global vars
+const config = require('./config');
+const mapRole = config.availableRoles;
+
 const kochitanId = "243350722672852992";
 const ownerId = "220729183679152138"; // nin9swells
 const itgServerId = "211451032847384576";
@@ -350,6 +353,10 @@ bot.on("message", msg => {
             .then(user => msg.channel.send("I'm playing " + game))
             .catch(console.error);
         }
+      }
+      else if (lcmd === "getrole") {
+        res = msg.guild.roles.find("name", params[0]);
+        msg.channel.send(res.id);
       }
     }
 
@@ -775,61 +782,65 @@ bot.on("message", msg => {
   }
 });
 
+bot.on('raw', async (event) => {
+  if (event.t === "MESSAGE_REACTION_ADD" || event.t === "MESSAGE_REACTION_REMOVE") {
+    packet = event.d;
+    user = bot.users.get(packet.user_id);
+    channel = bot.channels.get(packet.channel_id);
 
-// // create an event listener for messages
-// bot.on('message', message => {
-//   // if the message is "what is my avatar",
-//   if (message.content === 'test avatar') {
-//     // send the user's avatar URL
-//     message.reply(message.author.avatarURL);
-//   }
-// });
+    message = await channel.fetchMessage(packet.message_id);
+    reaction = message.reactions.get(packet.emoji.name);
 
+    if (event.t === "MESSAGE_REACTION_ADD") {
+      bot.emit('messageReactionAdd', reaction, user);
+    }
+    else if (!(typeof reaction === "undefined") && event.t === "MESSAGE_REACTION_REMOVE") {
+      bot.emit('messageReactionRemove', reaction, user);
+    }
+
+  }
+});
+
+function isToggleAction(msgReaction, user) {
+  if (!(user.id === kochitanId))
+  if (msgReaction.message.channel.id === config.roleToggleChannelId)
+  if (msgReaction.emoji.name === "✅")
+  return true;
+
+  return false;
+};
+
+bot.on('messageReactionAdd', (msgReaction, user) => {
+  if (isToggleAction(msgReaction, user)) {
+    Object.keys(mapRole).forEach(key => {
+      if (msgReaction.message.id === mapRole[key].toggleMsgId) {
+        msgReaction.message.guild.member(user).addRole(mapRole[key].roleId);
+      }
+    });
+  }
+});
+
+bot.on('messageReactionRemove', (msgReaction, user) => {
+  if (!(user.id === kochitanId)) {
+    Object.keys(mapRole).forEach(key => {
+      if (msgReaction.message.id === mapRole[key].toggleMsgId) {
+        msgReaction.message.guild.member(user).removeRole(mapRole[key].roleId);
+      }
+    });
+  }
+});
+
+process.on('unhandledRejection', error => {
+	console.error(`Uncaught Promise Rejection: \n${error.stack}`);
+});
 
 bot.on('ready', () => {
   console.log('Ready to serve you, goshuujin-sama!');
 
-//  var jobmusicbot = schedule.scheduleJob('30 * * * * *', function() {
-//    console.log("job scheduler kochifm check is running ...");
-//
-//    // console.log(bot.users);
-//    console.log(bot.channels.get("id", "277077834583769088"));
-
-
-    // var currkochifm = bot.channels.get("id", "277077834583769088").members.get("id", kochitanId);
-    // if (!currkochifm) restartKochiFm();
-    // else console.log("kochifm is still running, didn't restart");
-  //});
+  Object.keys(mapRole).forEach(key => {
+    bot.channels.get(config.roleToggleChannelId).fetchMessage(mapRole[key].toggleMsgId)
+      .then(message => message.react("✅"))
+  });
 });
-
-//var jobmusicbot = schedule.scheduleJob('30 * * * * *', function() {
-//  console.log("job scheduler kochifm check is running ...");
-//
-//  kfm_chk_session = new Discord.Client();
-//  kfm_chk_session.on('ready', () => {
-//    console.log("onready kochifm is triggered");
-//    var currkochifm = kfm_chk_session.user;
-//    if (currkochifm.voiceChannel == null) {
-//      restartKochiFm();
-//    }
-//    else {
-//      console.log("kochifm is still running, didn't restart");
-//    }
-//  });
-//
-//  // register on ready before login
-//  kfm_chk_session.login(process.env.DISCORD_TOKEN);
-//});
-
-// bot.on('voiceLeave', function(voicechan, usr) {
-//   console.log("voiceLeave triggered");
-//   if (!voicemt) {
-//     console.log("kochifm is not on maintenance, proceeding restarting it");
-//     if (usr.id.toString() === kochitanId && voicechan.id.toString() === "277077834583769088") { // kochifm 
-//       console.log("Kochitan just leave from kochifm, restarting ...");
-//       restartKochiFm();
-//     }
-//   } // end of !voicemt
-// });
 
 bot.login(process.env.DISCORD_TOKEN);
