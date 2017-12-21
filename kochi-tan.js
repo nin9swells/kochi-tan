@@ -789,12 +789,14 @@ bot.on('raw', async (event) => {
     channel = bot.channels.get(packet.channel_id);
 
     message = await channel.fetchMessage(packet.message_id);
+    if (typeof reaction === "undefined") return;
+
     reaction = message.reactions.get(packet.emoji.name);
 
     if (event.t === "MESSAGE_REACTION_ADD") {
       bot.emit('messageReactionAdd', reaction, user);
     }
-    else if (!(typeof reaction === "undefined") && event.t === "MESSAGE_REACTION_REMOVE") {
+    else if (event.t === "MESSAGE_REACTION_REMOVE") {
       bot.emit('messageReactionRemove', reaction, user);
     }
 
