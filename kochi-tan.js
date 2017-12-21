@@ -818,6 +818,9 @@ bot.on('messageReactionAdd', (msgReaction, user) => {
       }
     });
   }
+  else {
+    msgReaction.remove(user);
+  }
 });
 
 bot.on('messageReactionRemove', (msgReaction, user) => {
