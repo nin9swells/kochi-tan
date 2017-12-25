@@ -806,7 +806,6 @@ bot.on('raw', async (event) => {
 function isToggleAction(msgReaction, user) {
   if (!(user.id === kochitanId))
   if (msgReaction.message.channel.id === config.roleToggleChannelId)
-  if (msgReaction.emoji.name === "✅")
   return true;
 
   return false;
@@ -814,14 +813,16 @@ function isToggleAction(msgReaction, user) {
 
 bot.on('messageReactionAdd', (msgReaction, user) => {
   if (isToggleAction(msgReaction, user)) {
-    Object.keys(mapRole).forEach(key => {
-      if (msgReaction.message.id === mapRole[key].toggleMsgId) {
-        msgReaction.message.guild.member(user).addRole(mapRole[key].roleId);
-      }
-    });
-  }
-  else {
-    msgReaction.remove(user);
+    if (msgReaction.emoji.name === "✅") {
+      Object.keys(mapRole).forEach(key => {
+        if (msgReaction.message.id === mapRole[key].toggleMsgId) {
+          msgReaction.message.guild.member(user).addRole(mapRole[key].roleId);
+        }
+      });
+    }
+    else {
+      msgReaction.remove(user);
+    }
   }
 });
 
