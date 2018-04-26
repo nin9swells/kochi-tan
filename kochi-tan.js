@@ -820,6 +820,8 @@ var cron_hosting = require('node-schedule');
 var hostListChannel;
 var hostListMessage;
 var j = cron_hosting.scheduleJob('*/' + config.hostlist.interval + ' * * * * *', async function(){
+  db.run("DELETE FROM hosts WHERE (julianday('now') - julianday(host_start_time)) * 24 > 3");
+
   hostListChannel = bot.channels.get(config.hostlist.channelId);
   hostListChannel.fetchMessages().then(msgs => {
     if (msgs.array().length) {
