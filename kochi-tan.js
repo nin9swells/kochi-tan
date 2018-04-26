@@ -9,7 +9,7 @@ var schedule = require('node-schedule');
 const config = require('./config');
 const mapRole = config.availableRoles;
 
-const kochitanId = "243350722672852992";
+var kochitanId = "";
 const ownerId = "220729183679152138"; // nin9swells
 const itgServerId = "211451032847384576";
 const botPlaygroundServerId = "317217154350972928";
@@ -244,6 +244,70 @@ function help(cmd) {
   else {
     return help("help");
   }
+}
+
+function printHostList(channel) {
+  db.all("SELECT * FROM hosts ORDER BY host_start_time", function(err, rows) {
+    var listHostMsg = "";
+    var hostNum = 0;
+    var hostStartTime = "";
+    var nowTime = new Date();
+
+    for (var i = 0, len = rows.length; i < len; i++) {
+      hostNum = hostNum + 1;
+      hostStartTime = new Date(Date.parse(rows[i].host_start_time));
+      hostDateDiff = new Date(nowTime - hostStartTime);
+      hostDateDiffReadable = hostDateDiff.getUTCHours() + " hours " + hostDateDiff.getUTCMinutes() + " minutes";
+
+      // console.log(hostNum);
+      listHostMsg = listHostMsg + "* " + rows[i].host_owner
+                    + "\n> is hosting at " + rows[i].host_ip + " " + rows[i].host_note
+                    + "\n> " + hostDateDiffReadable + " ago\n\n";
+    }
+
+    if (hostNum == 0) {
+      channel.send("There are no open hosts. Host one!");
+    }
+    else {
+      channel.send(":video_game: **List of Hosts** :video_game:\n"
+        + "```markdown\n"
+        + listHostMsg
+        + "```"
+      );
+    }
+  });
+}
+
+function updateHostList(msg) {
+  db.all("SELECT * FROM hosts ORDER BY host_start_time", function(err, rows) {
+    var listHostMsg = "";
+    var hostNum = 0;
+    var hostStartTime = "";
+    var nowTime = new Date();
+
+    for (var i = 0, len = rows.length; i < len; i++) {
+      hostNum = hostNum + 1;
+      hostStartTime = new Date(Date.parse(rows[i].host_start_time));
+      hostDateDiff = new Date(nowTime - hostStartTime);
+      hostDateDiffReadable = hostDateDiff.getUTCHours() + " hours " + hostDateDiff.getUTCMinutes() + " minutes";
+
+      // console.log(hostNum);
+      listHostMsg = listHostMsg + "* " + rows[i].host_owner
+                    + "\n> is hosting at " + rows[i].host_ip + " " + rows[i].host_note
+                    + "\n> " + hostDateDiffReadable + " ago\n\n";
+    }
+
+    if (hostNum == 0) {
+      msg.edit("There are no open hosts. Host one!");
+    }
+    else {
+      msg.edit(":video_game: **List of Hosts** :video_game:\n"
+        + "```markdown\n"
+        + listHostMsg
+        + "```"
+      );
+    }
+  });
 }
 
 function restartKochiFm() {
@@ -617,37 +681,7 @@ bot.on("message", msg => {
       db.run("DELETE FROM hosts WHERE (julianday('now') - julianday(host_start_time)) * 24 > 3");
 
       // setTimeout to wait delete process finished
-      setTimeout(function() {
-        db.all("SELECT * FROM hosts ORDER BY host_start_time", function(err, rows) {
-          var listHostMsg = "";
-          var hostNum = 0;
-          var hostStartTime = "";
-          var nowTime = new Date();
-
-          for (var i = 0, len = rows.length; i < len; i++) {
-            hostNum = hostNum + 1;
-            hostStartTime = new Date(Date.parse(rows[i].host_start_time));
-            hostDateDiff = new Date(nowTime - hostStartTime);
-            hostDateDiffReadable = hostDateDiff.getUTCHours() + " hours " + hostDateDiff.getUTCMinutes() + " minutes";
-
-            // console.log(hostNum);
-            listHostMsg = listHostMsg + "* " + rows[i].host_owner
-                          + "\n> is hosting at " + rows[i].host_ip + " " + rows[i].host_note
-                          + "\n> " + hostDateDiffReadable + " ago\n\n";
-          }
-
-          if (hostNum == 0) {
-            msg.channel.send("There are no open hosts. Host one!");
-          }
-          else {
-            msg.channel.send(":video_game: **List of Hosts** :video_game:\n"
-              + "```markdown\n"
-              + listHostMsg
-              + "```"
-            );
-          }
-        });
-      }, 100);
+      printHostList(msg.channel);
     }
 
 
@@ -782,6 +816,35 @@ bot.on("message", msg => {
   }
 });
 
+
+var cron_hosting = require('node-schedule');
+var hostListChannel;
+var hostListMessage;
+var j = cron_hosting.scheduleJob('*/' + config.hostlist.interval + ' * * * * *', async function(){
+  // console.log('The answer to life, the universe, and everything!');
+  // printHostList(hostListChannel);
+
+  hostListChannel = bot.channels.get(config.roleToggleChannelId);
+  hostListChannel.fetchMessages().then(msgs => {
+    // console.log(msgs);
+    console.log(msgs.array().length);
+    if (msgs.array().length) {
+      console.log("sip " + msgs.array().length);
+      updateHostList(msgs.array()[0]);
+    }
+    else {
+      console.log("eh " + msgs.array().length);
+      printHostList(hostListChannel);
+    }
+  });
+  // if (hostListMessage) {
+  //   updateHostList(hostListMessage);
+  // }
+  // else {
+  //   printHostList(hostListChannel);
+  // }
+});
+
 bot.on('raw', async (event) => {
   if (event.t === "MESSAGE_REACTION_ADD" || event.t === "MESSAGE_REACTION_REMOVE") {
     packet = event.d;
@@ -843,10 +906,20 @@ process.on('unhandledRejection', error => {
 bot.on('ready', () => {
   console.log('Ready to serve you, goshuujin-sama!');
 
+  kochitanId = bot.user.id;
+  console.log("Logged in as " + bot.user.username + " (" + bot.user.id + ")");
   Object.keys(mapRole).forEach(key => {
     bot.channels.get(config.roleToggleChannelId).fetchMessage(mapRole[key].toggleMsgId)
       .then(message => message.react("✅"))
   });
+
+  hostListChannel = bot.channels.get(config.roleToggleChannelId);
+  hostListChannel.fetchMessages().then(msgs =>
+    msgs.forEach(msg => {
+      msg.delete();
+    })
+  );
+
 });
 
 bot.login(process.env.DISCORD_TOKEN);
