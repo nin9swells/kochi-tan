@@ -816,33 +816,19 @@ bot.on("message", msg => {
   }
 });
 
-
 var cron_hosting = require('node-schedule');
 var hostListChannel;
 var hostListMessage;
 var j = cron_hosting.scheduleJob('*/' + config.hostlist.interval + ' * * * * *', async function(){
-  // console.log('The answer to life, the universe, and everything!');
-  // printHostList(hostListChannel);
-
-  hostListChannel = bot.channels.get(config.roleToggleChannelId);
+  hostListChannel = bot.channels.get(config.hostlist.channelId);
   hostListChannel.fetchMessages().then(msgs => {
-    // console.log(msgs);
-    console.log(msgs.array().length);
     if (msgs.array().length) {
-      console.log("sip " + msgs.array().length);
       updateHostList(msgs.array()[0]);
     }
     else {
-      console.log("eh " + msgs.array().length);
       printHostList(hostListChannel);
     }
   });
-  // if (hostListMessage) {
-  //   updateHostList(hostListMessage);
-  // }
-  // else {
-  //   printHostList(hostListChannel);
-  // }
 });
 
 bot.on('raw', async (event) => {
@@ -913,7 +899,7 @@ bot.on('ready', () => {
       .then(message => message.react("✅"))
   });
 
-  hostListChannel = bot.channels.get(config.roleToggleChannelId);
+  hostListChannel = bot.channels.get(config.hostlist.channelId);
   hostListChannel.fetchMessages().then(msgs =>
     msgs.forEach(msg => {
       msg.delete();
